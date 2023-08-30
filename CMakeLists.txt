@@ -75,10 +75,12 @@ include_directories(
 # 添加模块头文件
 include_directories(
   modules/common/include
+  modules/video/include
 )
 
 # 编译模块
 add_subdirectory(modules/common)
+add_subdirectory(modules/video)
 
 # 创建和链接主程序
 add_executable(${EXECUTABLE_NAME} main.cpp)

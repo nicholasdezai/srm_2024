@@ -1,2 +1,9 @@
-#include <srm/common.h>
-int main() { return 0; }
+#include <srm/video.h>
+
+#include <iostream>
+
+int main() {
+  auto reader = srm::video::CreateReader("file");
+  std::cout << reader << std::endl;
+  return 0;
+}
