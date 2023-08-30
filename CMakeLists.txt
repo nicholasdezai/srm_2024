@@ -10,10 +10,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_PREFIX_PATH /usr/local)
   set(CMAKE_OSX_ARCHITECTURES x86_64)
   set(CMAKE_CXX_COMPILER clang++)
-  set(CMAKE_EXE_LINKER_FLAGS
-      "-framework AppKit -framework CoreML -framework Foundation -framework Vision -framework CoreVideo"
-  )
-  add_compile_options(-x objective-c++ -fobjc-arc)
+  # set(CMAKE_EXE_LINKER_FLAGS
+      # "-framework AppKit -framework CoreML -framework Foundation -framework Vision -framework CoreVideo"
+  # )
+  # add_compile_options(-x objective-c++ -fobjc-arc)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -76,18 +76,19 @@ include_directories(
 include_directories(
   modules/common/include
   modules/video/include
+  modules/coord/include
 )
 
 # 编译模块
 add_subdirectory(modules/common)
 add_subdirectory(modules/video)
+add_subdirectory(modules/coord)
 
 # 创建和链接主程序
 add_executable(${EXECUTABLE_NAME} main.cpp)
 target_link_libraries(
   ${EXECUTABLE_NAME}
   ${OpenCV_LIBS}
-  Eigen3::Eigen
   ${CERES_LIBRARIES}
   ${GLOG_LIBRARIES}
   gflags
