@@ -1,0 +1,14 @@
+{
+    "clangd.arguments": [
+        "--all-scopes-completion",
+        "--cross-file-rename",
+        "--header-insertion=never",
+        "--background-index",
+        "--enable-config",
+        "--function-arg-placeholders",
+        "--clang-tidy",
+        "--query-driver=/usr/bin/g++",
+    ],
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+}

@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "SRM-Vision-2024",
+            "program": "${workspaceFolder}/build/srm-vision-2024",
+            "args": [ //请自行开启相应的args进行调试
+                // "--serial",
+                // "--video=camera",
+                // "--controller=infantry-3",
+                // "--record",
+                // "--ui=false"
+                // "--fps_limit=120",
+                // "--predictor=linear",
+                // "--rune",
+            ],
+            "cwd": "${workspaceFolder}/build"
+        }
+    ]
+}
