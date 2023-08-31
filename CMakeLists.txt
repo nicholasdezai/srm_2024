@@ -26,22 +26,34 @@ if(CMAKE_BUILD_TYPE STREQUAL Debug)
   add_compile_options(-O0)
 elseif(CMAKE_BUILD_TYPE STREQUAL Release)
   if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    add_compile_options(-O3 -march=x86-64 -flto)
+    add_compile_options(-O3 -march=x86-64)
   elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_compile_options(-O3 -march=native -flto)
   endif()
 endif()
 
-# 添加模块头文件
-include_directories(modules/common/include modules/video/include
-                    modules/coord/include modules/nn/include)
+# 添加可执行文件
+add_executable(${EXECUTABLE_NAME} main.cpp)
 
-# 编译模块
+# 添加模块头文件
+include_directories(
+  modules/common/include
+  modules/video/include
+  modules/coord/include
+  # modules/nn/include
+)
+
+# 编译模块 注意顺序问题
 add_subdirectory(modules/common)
 add_subdirectory(modules/video)
 add_subdirectory(modules/coord)
-add_subdirectory(modules/nn)
+# add_subdirectory(modules/nn)
 
-# 创建和链接主程序
-add_executable(${EXECUTABLE_NAME} main.cpp)
-target_link_libraries(${EXECUTABLE_NAME} srm_video srm_coord srm_common)
+# 链接库主程序
+target_link_libraries(
+  ${EXECUTABLE_NAME} 
+  srm_common 
+  srm_video
+  srm_coord 
+  # srm_nn
+)
