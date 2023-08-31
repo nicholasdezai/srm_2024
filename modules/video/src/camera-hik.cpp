@@ -1,8 +1,9 @@
 #include <MvCameraControl.h>
 #include <glog/logging.h>
-#include <srm/video/camera.h>
 
 #include <opencv2/imgproc.hpp>
+
+#include "srm/video/camera.h"
 
 namespace srm::video {
 

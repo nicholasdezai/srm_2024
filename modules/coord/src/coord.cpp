@@ -1,5 +1,6 @@
+#include "srm/coord/coord.h"
+
 #include <glog/logging.h>
-#include <srm/coord/coord.h>
 
 #include <Eigen/Dense>
 #include <opencv2/calib3d.hpp>

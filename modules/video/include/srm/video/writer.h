@@ -1,11 +1,11 @@
 #ifndef SRM_VIDEO_WRITER_H_
 #define SRM_VIDEO_WRITER_H_
 
-#include <srm/common/buffer.h>
-
 #include <atomic>
 #include <opencv2/videoio.hpp>
 #include <thread>
+
+#include "srm/common/buffer.h"
 
 namespace srm::video {
 /// 视频录像接口

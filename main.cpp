@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "srm/video.h"
+
 int main() {
   auto it = srm::nn::CreateYolo("coreml");
   std::cout << it << std::endl;
