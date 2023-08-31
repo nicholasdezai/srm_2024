@@ -34,13 +34,14 @@ endif()
 
 # 添加模块头文件
 include_directories(modules/common/include modules/video/include
-                    modules/coord/include)
+                    modules/coord/include modules/nn/include)
 
 # 编译模块
 add_subdirectory(modules/common)
 add_subdirectory(modules/video)
 add_subdirectory(modules/coord)
+add_subdirectory(modules/nn)
 
 # 创建和链接主程序
 add_executable(${EXECUTABLE_NAME} main.cpp)
-target_link_libraries(${EXECUTABLE_NAME} srm_video srm_coord)
+target_link_libraries(${EXECUTABLE_NAME} srm_video srm_coord srm_common)
