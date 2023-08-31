@@ -1,9 +1,10 @@
 #include <glog/logging.h>
-#include <srm/common/buffer.h>
-#include <srm/video/reader.h>
 
 #include <opencv2/videoio.hpp>
 #include <thread>
+
+#include "srm/common/buffer.h"
+#include "srm/video/reader.h"
 
 namespace srm::video {
 /**

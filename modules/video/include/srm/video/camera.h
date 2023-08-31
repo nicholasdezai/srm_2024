@@ -1,11 +1,11 @@
 #ifndef SRM_VIDEO_CAMERA_H_
 #define SRM_VIDEO_CAMERA_H_
 
-#include <srm/common/buffer.h>
-#include <srm/common/factory.h>
-#include <srm/video/frame.h>
-
 #include <atomic>
+
+#include "srm/common/buffer.h"
+#include "srm/common/factory.h"
+#include "srm/video/frame.h"
 
 enable_factory(srm::video, Camera);
 

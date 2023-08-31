@@ -1,8 +1,9 @@
 #include <glog/logging.h>
-#include <srm/video/camera.h>
-#include <srm/video/reader.h>
 
 #include <opencv2/core/persistence.hpp>
+
+#include "srm/video/camera.h"
+#include "srm/video/reader.h"
 
 namespace srm::video {
 /**

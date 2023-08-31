@@ -1,5 +1,6 @@
+#include "srm/coord/solver.h"
+
 #include <glog/logging.h>
-#include <srm/coord/solver.h>
 
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core/eigen.hpp>
@@ -47,7 +48,7 @@ bool CoordSolver::Initialize(std::string REF_IN config_file, cv::Mat intrinsic_m
       ctv_mi_.y(), rm_mi_(2, 0), rm_mi_(2, 1), rm_mi_(2, 2), ctv_mi_.z(), 0, 0, 0, 1;
   intrinsic_mat_ = std::move(intrinsic_mat);
   distortion_mat_ = std::move(distortion_mat);
-  // if (!dsp_to_dep_mat.empty()) cv::cv2eigen(std::move(dsp_to_dep_mat), dsp_to_dep_mat_);
+  if (!dsp_to_dep_mat.empty()) cv::cv2eigen(std::move(dsp_to_dep_mat), dsp_to_dep_mat_);
   cv::cv2eigen(intrinsic_mat_, intrinsic_mat_eigen_);
   fx_ = intrinsic_mat_eigen_(0, 0);
   fy_ = intrinsic_mat_eigen_(1, 1);

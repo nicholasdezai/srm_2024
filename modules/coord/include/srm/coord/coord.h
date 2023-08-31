@@ -1,9 +1,9 @@
 #ifndef SRM_COORDINATE_H_
 #define SRM_COORDINATE_H_
 
-#include <srm/common/tags.h>
-
 #include <Eigen/Core>
+
+#include "srm/common/tags.h"
 
 namespace srm::coord {
 

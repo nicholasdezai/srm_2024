@@ -1,5 +1,6 @@
+#include "srm/video/writer.h"
+
 #include <glog/logging.h>
-#include <srm/video/writer.h>
 
 namespace srm::video {
 

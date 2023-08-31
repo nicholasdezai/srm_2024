@@ -1,6 +1,6 @@
-#include <srm/video.h>
-
 #include <iostream>
+
+#include "srm/video.h"
 
 int main() {
   auto reader = srm::video::CreateReader("file");
