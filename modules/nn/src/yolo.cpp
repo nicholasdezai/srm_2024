@@ -35,10 +35,10 @@ void Yolo::GetObjects(std::vector<Objects> REF_OUT objs) {
     obj.cls = cls;
     obj.prob = prob;
 
-    float x = data[0];
-    float y = data[1];
-    float w = data[2];
-    float h = data[3];
+    float& x = data[0];
+    float& y = data[1];
+    float& w = data[2];
+    float& h = data[3];
 
     obj.x1 = x - w / 2;
     obj.y1 = y - h / 2;
@@ -52,7 +52,7 @@ void Yolo::GetObjects(std::vector<Objects> REF_OUT objs) {
 }
 
 void Yolo::NMS(std::vector<Objects> REF_OUT objs) {
-  std::sort(objs.begin(), objs.end(), [](Objects &a, Objects &b) { return a.prob > b.prob; });
+  std::sort(objs.begin(), objs.end(), [](Objects& a, Objects& b) { return a.prob > b.prob; });
   if (objs.size() > max_nms_) objs.resize(max_nms_);
   std::vector<float> vArea(objs.size());
   for (size_t i = 0; i < objs.size(); i++) {
@@ -60,12 +60,12 @@ void Yolo::NMS(std::vector<Objects> REF_OUT objs) {
   }
   for (size_t i = 0; i < objs.size(); i++) {
     for (size_t j = i + 1; j < objs.size();) {
-      float xx1 = std::max(objs[i].x1, objs[j].x1);
-      float yy1 = std::max(objs[i].y1, objs[j].y1);
-      float xx2 = std::min(objs[i].x2, objs[j].x2);
-      float yy2 = std::min(objs[i].y2, objs[j].y2);
-      float w = std::max(float(0), xx2 - xx1 + 1);
-      float h = std::max(float(0), yy2 - yy1 + 1);
+      float xx1 = std::fmax(objs[i].x1, objs[j].x1);
+      float yy1 = std::fmax(objs[i].y1, objs[j].y1);
+      float xx2 = std::fmin(objs[i].x2, objs[j].x2);
+      float yy2 = std::fmin(objs[i].y2, objs[j].y2);
+      float w = std::fmax(0, xx2 - xx1 + 1);
+      float h = std::fmax(0, yy2 - yy1 + 1);
       float inter = w * h;
       float ovr = inter / (vArea[i] + vArea[j] - inter);
       if (ovr >= iou_thresh_) {
