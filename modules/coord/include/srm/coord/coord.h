@@ -1,5 +1,5 @@
-#ifndef SRM_COORDINATE_H_
-#define SRM_COORDINATE_H_
+#ifndef SRM_COORD_COORD_H_
+#define SRM_COORD_COORD_H_
 
 #include <Eigen/Core>
 
@@ -82,4 +82,4 @@ struct PnPInfo {
 
 }  // namespace srm::coord
 
-#endif  // SRM_COORDINATE_H_
+#endif  // SRM_COORD_COORD_H_

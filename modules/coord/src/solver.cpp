@@ -124,4 +124,5 @@ CTVec CoordSolver::DisparityToDepth(HCTVec REF_IN hctv_pic_d) {
   HCTVec hctv_cam = dsp_to_dep_mat_ * hctv_pic_d;
   return {hctv_cam[0] / hctv_cam[3], hctv_cam[1] / hctv_cam[3], hctv_cam[2] / hctv_cam[3]};
 }
+
 }  // namespace srm::coord

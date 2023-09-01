@@ -49,4 +49,5 @@ RVec RMatToRVec(RMat REF_IN rm) {
   cv::cv2eigen(rv_cv, rv);
   return rv;
 }
+
 }  // namespace srm::coord
