@@ -2,9 +2,10 @@
 #define SRM_COMMON_EKF_H_
 
 #include <ceres/jet.h>
-#include <srm/common/tags.h>
 
 #include <Eigen/Geometry>
+
+#include "srm/common/tags.h"
 
 namespace srm {
 /**

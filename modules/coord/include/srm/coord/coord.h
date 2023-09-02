@@ -1,9 +1,9 @@
-#ifndef SRM_COORDINATE_H_
-#define SRM_COORDINATE_H_
-
-#include <srm/common/tags.h>
+#ifndef SRM_COORD_COORD_H_
+#define SRM_COORD_COORD_H_
 
 #include <Eigen/Core>
+
+#include "srm/common/tags.h"
 
 namespace srm::coord {
 
@@ -82,4 +82,4 @@ struct PnPInfo {
 
 }  // namespace srm::coord
 
-#endif  // SRM_COORDINATE_H_
+#endif  // SRM_COORD_COORD_H_

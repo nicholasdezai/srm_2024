@@ -1,12 +1,12 @@
 #ifndef SRM_VIDEO_READER_H_
 #define SRM_VIDEO_READER_H_
 
-#include <srm/common/factory.h>
-#include <srm/video/camera.h>
-#include <srm/video/frame.h>
-
 #include <atomic>
 #include <opencv2/videoio.hpp>
+
+#include "srm/common/factory.h"
+#include "srm/video/camera.h"
+#include "srm/video/frame.h"
 
 enable_factory(srm::video, Reader);
 

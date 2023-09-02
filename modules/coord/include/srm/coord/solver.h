@@ -1,9 +1,13 @@
+#ifndef SRM_COORD_SOLVER_H_
+#define SRM_COORD_SOLVER_H_
+
 #include <srm/coord/coord.h>
 
 #include <Eigen/LU>
 #include <opencv2/core/mat.hpp>
 
 namespace srm::coord {
+
 /// 坐标系求解器类
 class CoordSolver {
   // 世界坐标系：原点为车身上的固定点，无旋转，随车身平移
@@ -108,4 +112,7 @@ class CoordSolver {
    */
   CTVec DisparityToDepth(HCTVec REF_IN hctv_pic_d);
 };
+
 }  // namespace srm::coord
+
+#endif  // SRM_COORD_SOLVER_H_

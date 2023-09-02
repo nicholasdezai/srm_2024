@@ -1,9 +1,9 @@
 #ifndef SRM_COMMON_BUFFER_H_
 #define SRM_COMMON_BUFFER_H_
 
-#include <srm/common/tags.h>
-
 #include <mutex>
+
+#include "srm/common/tags.h"
 
 namespace srm {
 /**

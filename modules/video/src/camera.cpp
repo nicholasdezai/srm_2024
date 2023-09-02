@@ -1,5 +1,6 @@
+#include "srm/video/camera.h"
+
 #include <glog/logging.h>
-#include <srm/video/camera.h>
 
 namespace srm::video {
 

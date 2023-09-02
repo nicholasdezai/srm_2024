@@ -24,7 +24,10 @@ class CoreML final : public Yolo {
   inline static auto registry_ = factory::RegistrySub<Yolo, CoreML>("coreml");
 };
 
-bool CoreML::Initialize(std::string REF_IN model_file, int num_class, int num_points) {
+bool CoreML::Initialize(std::string REF_IN model_file, int num_classes, int num_points) {
+  num_classes_ = num_classes;
+  num_points_ = num_points;
+
   const std::string &s = model_file;
   int p = s.rfind('.');
   if (s.substr(p + 1) != "mlmodelc") {

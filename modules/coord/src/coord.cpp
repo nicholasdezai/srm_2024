@@ -1,5 +1,6 @@
+#include "srm/coord/coord.h"
+
 #include <glog/logging.h>
-#include <srm/coord/coord.h>
 
 #include <Eigen/Dense>
 #include <opencv2/calib3d.hpp>
@@ -48,4 +49,5 @@ RVec RMatToRVec(RMat REF_IN rm) {
   cv::cv2eigen(rv_cv, rv);
   return rv;
 }
+
 }  // namespace srm::coord
