@@ -1,6 +1,17 @@
 set(LIB srm_nn)
 message("Configuring nn module...")
 
+# 设置目录位置
+if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(TensorRT_PATH /opt/TensorRT) # Linux x86-64: TensorRT 目录
+  elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(TensorRT_PATH /usr/src/tensorrt)
+    set(TensorRT_LIB_PATH /usr/lib/aarch64-linux-gnu)
+  endif()
+endif()
+
 find_package(OpenCV 4 REQUIRED QUIET)
 if(NOT ${OpenCV_FOUND})
   message(FATAL_ERROR "OpenCV not found.")
@@ -9,6 +20,12 @@ endif()
 find_package(Glog REQUIRED QUIET)
 if(NOT ${Glog_FOUND})
   message(FATAL_ERROR "Glog not found.")
+endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  find_package(CUDAToolkit 11 REQUIRED)
+  find_package(TensorRT REQUIRED)
+  file(GLOB SRC src/tensorrt/*.cpp src/yolo.cpp)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -23,14 +40,18 @@ endif()
 
 target_include_directories(
   ${LIB}
+  PUBLIC ${CUDAToolkit_INCLUDE_DIRS}
+  PUBLIC ${TensorRT_INCLUDE_DIRS}
   PUBLIC ${OpenCV_INCLUDE_DIRS}
   PUBLIC ${GLOG_INCLUDE_DIRS}
   PUBLIC ${EIGEN3_INCLUDE_DIR}
 )
 
 target_link_libraries(
-  ${LIB}
-  ${OpenCV_LIBS}
-  ${CoreML_LIBS}
-  glog::glog
-)
+     ${LIB}
+     ${CUDAToolkit_LIBS}
+     ${TensorRT_LIBS}
+     ${OpenCV_LIBS}
+     ${CoreML_LIBS}
+     glog::glog
+ )
