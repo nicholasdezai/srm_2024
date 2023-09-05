@@ -4,6 +4,8 @@ project(SRM-Vision-2024)
 set(EXECUTABLE_NAME srm-vision-2024)
 
 # 设置编译选项
+add_link_options(-Wl,-no-as-needed)
+
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_CXX_STANDARD 20)
   set(CMAKE_IGNORE_PATH /opt/homebrew)
@@ -53,7 +55,7 @@ add_subdirectory(modules/nn)
 target_link_libraries(
   ${EXECUTABLE_NAME} 
   srm_common 
-  srm_video
+  #srm_video
   srm_coord 
   srm_nn
 )
