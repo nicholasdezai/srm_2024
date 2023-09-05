@@ -42,7 +42,14 @@ target_include_directories(
   ${LIB}
   PUBLIC ${OpenCV_INCLUDE_DIRS}
   PUBLIC ${GLOG_INCLUDE_DIRS}
-  PUBLIC ${MVS_INCLUDE_DIRS})
+  PUBLIC ${MVS_INCLUDE_DIRS}
+)
 
-target_link_libraries(${LIB} ${OpenCV_LIBS} glog::glog ${MVS_LIBS}
-                      ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(
+  ${LIB} 
+  ${OpenCV_LIBS} 
+  ${MVS_LIBS}
+  ${CMAKE_THREAD_LIBS_INIT}
+  glog::glog 
+  srm_common
+)

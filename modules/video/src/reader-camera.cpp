@@ -1,7 +1,6 @@
 #include <glog/logging.h>
 
-#include <opencv2/core/persistence.hpp>
-
+#include "srm/common/config.h"
 #include "srm/video/camera.h"
 #include "srm/video/reader.h"
 
@@ -15,7 +14,7 @@ class CameraReader final : public Reader {
   CameraReader() = default;
   ~CameraReader() final = default;
 
-  bool Initialize(std::string REF_IN config_file) final;
+  bool Initialize(std::string REF_IN prefix) final;
   bool GetFrame(Frame REF_OUT frame, int id = 0) final;
   void RegisterFrameCallback(FrameCallback callback, void *obj, int id = 0) final;
   void UnregisterFrameCallback(FrameCallback callback, int id = 0) final;
@@ -29,72 +28,44 @@ class CameraReader final : public Reader {
     cv::Mat distortion_mat;            ///< 相机畸变矩阵
   };
 
-  inline static auto registry_ = factory::RegistrySub<Reader, CameraReader>("camera");  ///< 视频源注册信息
+  inline static auto registry_ = RegistrySub<Reader, CameraReader>("camera");  ///< 视频源注册信息
 
   std::vector<std::unique_ptr<CameraInfo>> cams_info_{};  ///< 相机公共接口指针
 };
 
-bool CameraReader::Initialize(std::string REF_IN config_file) {
-  cv::FileStorage init_config;
-  init_config.open(config_file, cv::FileStorage::READ);
-  if (!init_config.isOpened()) {
-    LOG(ERROR) << "Failed to open camera initialization file " << config_file << ".";
-    return false;
-  }
-  std::string cam_config_file;
-  init_config["CAM_CONFIG"] >> cam_config_file;
-  cv::FileStorage cam_config;
-  cam_config.open(cam_config_file, cv::FileStorage::READ);
-  if (!cam_config.isOpened()) {
-    LOG(ERROR) << "Failed to open camera config file " << cam_config_file << ".";
-    return false;
-  }
-
-  auto CreateCamera = [&init_config, &cam_config](std::string cam_name,
-                                                  std::unique_ptr<CameraReader::CameraInfo> REF_OUT cam_info) {
+bool CameraReader::Initialize(std::string REF_IN prefix) {
+  auto CreateCamera = [prefix](std::string cam_name, std::unique_ptr<CameraReader::CameraInfo> REF_OUT cam_info) {
     auto &[camera, intrinsic_mat, distortion_mat] = *cam_info;
+    std::string cameras_prefix = "video.cameras." + cam_name;
 
-    std::string cameratype;
-    cam_config[cam_name]["TYPE"] >> cameratype;
-    camera.reset(::srm::video::CreateCamera(cameratype));
+    std::string cameratype = cfg.Get<std::string>({cameras_prefix, "type"});
+    camera.reset(video::CreateCamera(cameratype));
     if (!camera) {
       LOG(ERROR) << "Failed to create camera object of type " << cameratype << ".";
       return false;
     }
 
-    std::string serial_number, cameraconfig_file;
-    cam_config[cam_name]["SN"] >> serial_number;
-    cam_config[cam_name]["CONFIG"] >> cameraconfig_file;
-    if (!camera->OpenCamera(serial_number, cameraconfig_file)) {
+    if (!camera->OpenCamera(cfg.Get<std::string>({cameras_prefix, "sn"}), "")) {
       camera.reset();
       return false;
     }
 
-    int exposure_time;
-    cam_config[cam_name]["EXPOSURE_TIME"] >> exposure_time;
-    if (!camera->SetExposureTime(static_cast<uint32_t>(exposure_time)))
+    if (!camera->SetExposureTime(static_cast<uint32_t>(cfg.Get<int>({cameras_prefix, "exposure_time"}))))
       LOG(WARNING) << "Failed to set exposure time of camera.";
 
-    float gain_value;
-    cam_config[cam_name]["GAIN_VALUE"] >> gain_value;
-    if (!camera->SetGainValue(gain_value)) LOG(WARNING) << "Failed to set gain value of camera.";
+    if (!camera->SetGainValue(cfg.Get<double>({cameras_prefix, "gain_value"})))
+      LOG(WARNING) << "Failed to set gain value of camera.";
 
-    int time_stamp_ns = 0;
-    cam_config[cam_name]["TIME_STAMP_NS"] >> time_stamp_ns;
-    if (!camera->SetTimeStampNS(time_stamp_ns))
+    if (!camera->SetTimeStampNS(cfg.Get<int>({cameras_prefix, "time_stamp_ns"})))
       LOG(WARNING) << "Invalid value for time stamp unit. Please check your configuration.";
 
-    cam_config[cam_name]["IntrinsicMatrix"] >> intrinsic_mat;
-    cam_config[cam_name]["DistortionMatrix"] >> distortion_mat;
+    intrinsic_mat = cfg.Get<cv::Mat>({cameras_prefix, "intrinsic_mat"});
+    distortion_mat = cfg.Get<cv::Mat>({cameras_prefix, "distortion_mat"});
 
-    double frame_rate;
-    init_config["FRAME_RATE"] >> frame_rate;
-    if (!camera->SetFrameRate(frame_rate))
+    if (!camera->SetFrameRate(cfg.Get<double>({prefix, "frame_rate"})))
       LOG(WARNING) << "Failed to set frame rate of camera. Fallback to default value.";
 
-    int hardware_trigger = 0;
-    init_config["HARDWARE_TRIGGER"] >> hardware_trigger;
-    if (!camera->SetHardwareTriggerMode(hardware_trigger))
+    if (!camera->SetHardwareTriggerMode(cfg.Get<int>({prefix, "hardware_trigger"})))
       LOG(WARNING) << "Failed to set hardware trigger mode of camera. Fallback to software trigger mode.";
 
     if (!camera->StartStream()) {
@@ -104,17 +75,14 @@ bool CameraReader::Initialize(std::string REF_IN config_file) {
     return true;
   };
 
-  int cam_num;
-  init_config["CAM_NUM"] >> cam_num;
-  source_count_ = cam_num;
-  cams_info_.resize(cam_num);
+  source_count_ = cfg.Get<int>({prefix, "cam_num"});
+  cams_info_.resize(source_count_);
 
-  for (int i = 0; i < cam_num; i++) {
+  for (int i = 0; i < source_count_; i++) {
     cams_info_[i] = std::make_unique<CameraInfo>();
-    std::string cam_name;
-    init_config["CAMERA" + std::to_string(i)] >> cam_name;
+    std::string cam_name = cfg.Get<std::string>({prefix, "camera" + std::to_string(i)});
     if (!CreateCamera(cam_name, cams_info_[i])) {
-      LOG(ERROR) << "Create camera" + std::to_string(i) + " failed.";
+      LOG(ERROR) << "Create camera " + cam_name + " failed.";
       return false;
     }
   }

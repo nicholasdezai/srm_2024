@@ -1,12 +1,22 @@
-#include <srm/nn.h>
+#include "srm/core.h"
 
-#include <iostream>
+std::atomic_bool srm::core::Core::exit_signal_ = false;
 
-#include "srm/video.h"
+void SignalHandler(int) {
+  LOG(WARNING) << "Caught interrupt signal. Attempting to exit...";
+  srm::core::Core::exit_signal_ = true;
+}
 
-int main() {
-  auto it = srm::nn::CreateYolo("coreml");
-  std::cout << it << std::endl;
-  it->Initialize("test", 36, 4);
+int main(int arc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
+  FLAGS_alsologtostderr = FLAGS_colorlogtostderr = FLAGS_log_prefix = true;
+  FLAGS_log_dir = "../log/";
+
+  srm::cfg.Parse("../config.yaml");
+  auto it = srm::core::CreateCore("stereo");
+  it->Initialize();
+  it->Run();
+
+  google::ShutdownGoogleLogging();
   return 0;
 }

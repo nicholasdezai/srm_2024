@@ -8,15 +8,13 @@
  * @param _namespace 命名空间
  * @param _type 基类名称
  */
-#define enable_factory(_namespace, _type)                         \
-  namespace _namespace {                                          \
-  class _type;                                                    \
-  inline _type *Create##_type(const std::string &type_name) {     \
-    return factory::Factory<_type>::Instance().Create(type_name); \
-  }                                                               \
+#define enable_factory(_namespace, _type)                                                                            \
+  namespace _namespace {                                                                                             \
+  class _type;                                                                                                       \
+  inline _type *Create##_type(const std::string &type_name) { return Factory<_type>::Instance().Create(type_name); } \
   }
 
-namespace factory {
+namespace srm {
 /**
  * @brief 实际基类所属注册信息基类
  * @tparam B 实际基类名称
@@ -97,6 +95,6 @@ class RegistrySub final : public RegistryBase<B> {
    */
   B *Create() final { return new S(); }
 };
-}  // namespace factory
+}  // namespace srm
 
 #endif  // SRM_COMMON_FACTORY_H_

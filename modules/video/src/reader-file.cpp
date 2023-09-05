@@ -4,6 +4,7 @@
 #include <thread>
 
 #include "srm/common/buffer.h"
+#include "srm/common/config.h"
 #include "srm/video/reader.h"
 
 namespace srm::video {
@@ -17,7 +18,7 @@ class FileReader final : public Reader {
   FileReader(){};
   ~FileReader();
 
-  bool Initialize(std::string REF_IN config_file) final;
+  bool Initialize(std::string REF_IN prefix) final;
   bool GetFrame(Frame REF_OUT frame, int id = 0) final;
   void RegisterFrameCallback(FrameCallback callback, void *obj, int id = 0) final;
   void UnregisterFrameCallback(FrameCallback callback, int id = 0) final;
@@ -33,7 +34,7 @@ class FileReader final : public Reader {
     std::vector<std::pair<FrameCallback, void *>> callback_list;  ///< 注册回调函数列表
   };
 
-  inline static auto registry_ = factory::RegistrySub<Reader, FileReader>("file");  ///< 视频源注册信息
+  inline static auto registry_ = RegistrySub<Reader, FileReader>("file");  ///< 视频源注册信息
 
   double frame_rate_{};                                  ///< 帧率
   uint64_t time_stamp_{};                                ///< 时间戳
@@ -47,41 +48,22 @@ FileReader::~FileReader() {
   if (thread_->joinable()) thread_->join();
 }
 
-bool FileReader::Initialize(std::string REF_IN config_file) {
-  cv::FileStorage init_config;
-  init_config.open(config_file, cv::FileStorage::READ);
-  if (!init_config.isOpened()) {
-    LOG(ERROR) << "Failed to open camera initialization file " << config_file << ".";
-    return false;
-  }
-
-  std::string cam_config_file;
-  init_config["CAM_CONFIG"] >> cam_config_file;
-  cv::FileStorage cam_config;
-  cam_config.open(cam_config_file, cv::FileStorage::READ);
-  if (!cam_config.isOpened()) {
-    LOG(ERROR) << "Failed to open all cameras' config file " << cam_config_file << ".";
-    return false;
-  }
-
-  int cam_num;
-  init_config["CAM_NUM"] >> cam_num;
-  source_count_ = cam_num;
-  videos_info_.resize(cam_num);
+bool FileReader::Initialize(std::string REF_IN prefix) {
+  source_count_ = cfg.Get<int>({prefix, "cam_num"});
+  videos_info_.resize(source_count_);
 
   for (int i = 0; i < source_count_; i++) {
     videos_info_[i] = std::make_unique<VideoInfo>();
     auto &[video, intrinsic_mat, distortion_mat, _, __] = *videos_info_[i];
-    std::string cam_name = init_config["CAMERA" + std::to_string(i)];
-    cam_config[init_config["CAMERA" + std::to_string(i)]]["IntrinsicMatrix"] >> intrinsic_mat;
-    cam_config[init_config["CAMERA" + std::to_string(i)]]["DistortionMatrix"] >> distortion_mat;
+    std::string cam_name = cfg.Get<std::string>({prefix, "camera" + std::to_string(i)});
+    std::string cameras_prefix = "video.cameras." + cam_name;
+    intrinsic_mat = cfg.Get<cv::Mat>({cameras_prefix, "intrinsic_mat"});
+    distortion_mat = cfg.Get<cv::Mat>({cameras_prefix, "distortion_mat"});
     if (intrinsic_mat.empty() || distortion_mat.empty()) {
       LOG(ERROR) << "Invalid intrinsic matrix or distortion matrix. Please check your configuration.";
       return false;
     }
-
-    std::string video_file;
-    init_config["VIDEO" + std::to_string(i)] >> video_file;
+    auto video_file = cfg.Get<std::string>({prefix, "video" + std::to_string(i)});
     video.open(video_file);
     if (!video.isOpened()) {
       LOG(ERROR) << "Failed to open video file " << video_file << ".";

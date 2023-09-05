@@ -35,7 +35,7 @@ class HikCamera final : public Camera {
 
   bool SetExposureTimeHikImplementation(float exposure_time);
 
-  inline static auto registry_ = factory::RegistrySub<Camera, HikCamera>("HikCamera");  ///< 相机注册信息
+  inline static auto registry_ = RegistrySub<Camera, HikCamera>("HikCamera");  ///< 相机注册信息
 
   void *device_{};  ///< 设备句柄
 };

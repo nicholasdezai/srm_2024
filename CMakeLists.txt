@@ -28,7 +28,7 @@ elseif(CMAKE_BUILD_TYPE STREQUAL Release)
   if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
     add_compile_options(-O3 -march=x86-64)
   elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    add_compile_options(-O3 -march=native -flto)
+    add_compile_options(-O3 -march=native)
   endif()
 endif()
 
@@ -41,6 +41,8 @@ include_directories(
   modules/video/include
   modules/coord/include
   modules/nn/include
+  modules/robot/include
+  modules/core/include
 )
 
 # 编译模块 注意顺序问题
@@ -48,12 +50,11 @@ add_subdirectory(modules/common)
 add_subdirectory(modules/video)
 add_subdirectory(modules/coord)
 add_subdirectory(modules/nn)
+add_subdirectory(modules/robot)
+add_subdirectory(modules/core)
 
 # 链接库主程序
 target_link_libraries(
   ${EXECUTABLE_NAME} 
-  srm_common 
-  srm_video
-  srm_coord 
-  srm_nn
+  srm_core
 )

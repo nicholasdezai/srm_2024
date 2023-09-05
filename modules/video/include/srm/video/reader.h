@@ -25,7 +25,7 @@ class Reader {
    * @param [in] config_file 配置文件路径
    * @return 是否初始化成功
    */
-  virtual bool Initialize(std::string REF_IN config_file) = 0;
+  virtual bool Initialize(std::string REF_IN prefix) = 0;
 
   /**
    * @brief 获取帧数据

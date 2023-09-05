@@ -33,4 +33,5 @@ target_link_libraries(
   ${OpenCV_LIBS}
   ${CoreML_LIBS}
   glog::glog
+  srm_common
 )

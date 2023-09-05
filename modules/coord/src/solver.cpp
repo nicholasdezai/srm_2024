@@ -5,22 +5,17 @@
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core/eigen.hpp>
 
+#include "srm/common/config.h"
+
 namespace srm::coord {
 
-bool CoordSolver::Initialize(std::string REF_IN config_file, cv::Mat intrinsic_mat, cv::Mat distortion_mat,
-                             cv::Mat dsp_to_dep_mat) {
-  cv::FileStorage coord_config;
-  coord_config.open(config_file, cv::FileStorage::READ);
-  if (!coord_config.isOpened()) {
-    LOG(ERROR) << "Failed to open coordinate configuration file " << config_file << ".";
-    return false;
-  }
-  std::vector<double> ctv_iw_std, ctv_ci_std, ctv_mi_std, ea_ci_std, ea_mi_std;
-  coord_config["CTV_IMU_WORLD"] >> ctv_iw_std;
-  coord_config["CTV_CAM_IMU"] >> ctv_ci_std;
-  coord_config["CTV_MUZZLE_IMU"] >> ctv_mi_std;
-  coord_config["EA_CAM_IMU"] >> ea_ci_std;
-  coord_config["EA_MUZZLE_IMU"] >> ea_mi_std;
+bool Solver::Initialize(std::string REF_IN prefix, cv::Mat intrinsic_mat, cv::Mat distortion_mat,
+                        cv::Mat dsp_to_dep_mat) {
+  auto ctv_iw_std = cfg.Get<std::vector<double>>({prefix, "ctv_imu_world"});
+  auto ctv_ci_std = cfg.Get<std::vector<double>>({prefix, "ctv_cam_imu"});
+  auto ctv_mi_std = cfg.Get<std::vector<double>>({prefix, "ctv_muzzle_imu"});
+  auto ea_ci_std = cfg.Get<std::vector<double>>({prefix, "ea_cam_imu"});
+  auto ea_mi_std = cfg.Get<std::vector<double>>({prefix, "ea_muzzle_imu"});
   if (ctv_iw_std.size() != 3 || ctv_ci_std.size() != 3 || ctv_mi_std.size() != 3 || ea_ci_std.size() != 3 ||
       ea_mi_std.size() != 3) {
     LOG(ERROR) << "Failed to read coordinate configurations.";
@@ -60,8 +55,8 @@ bool CoordSolver::Initialize(std::string REF_IN config_file, cv::Mat intrinsic_m
   return true;
 }
 
-void CoordSolver::SolvePnP(std::array<cv::Point3d, 4> REF_IN p3d_world, std::array<cv::Point2f, 4> REF_IN p2d_pic,
-                           RMat REF_IN rm_imu, PnPInfo REF_OUT pnp_info) {
+void Solver::SolvePnP(std::array<cv::Point3d, 4> REF_IN p3d_world, std::array<cv::Point2f, 4> REF_IN p2d_pic,
+                      RMat REF_IN rm_imu, PnPInfo REF_OUT pnp_info) {
   cv::Mat rv_cam_cv, ctv_cam_cv, rm_cam_cv;
   cv::solvePnP(p3d_world, p2d_pic, intrinsic_mat_, distortion_mat_, rv_cam_cv, ctv_cam_cv, false,
                cv::SOLVEPNP_ITERATIVE);
@@ -75,7 +70,7 @@ void CoordSolver::SolvePnP(std::array<cv::Point3d, 4> REF_IN p3d_world, std::arr
   pnp_info.stv_world = CTVecToSTVec(pnp_info.ctv_world);
 }
 
-CTVec CoordSolver::CamToWorld(CTVec REF_IN ctv_cam, RMat REF_IN rm_imu) const {
+CTVec Solver::CamToWorld(CTVec REF_IN ctv_cam, RMat REF_IN rm_imu) const {
   HCTVec hctv_cam, hctv_imu;
   CTVec ctv_imu;
   hctv_cam << ctv_cam[0], ctv_cam[1], ctv_cam[2], 1;
@@ -85,7 +80,7 @@ CTVec CoordSolver::CamToWorld(CTVec REF_IN ctv_cam, RMat REF_IN rm_imu) const {
   return rm_imu * ctv_imu;
 }
 
-CTVec CoordSolver::WorldToCam(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) const {
+CTVec Solver::WorldToCam(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) const {
   HCTVec hctv_cam, hctv_imu;
   CTVec ctv_imu;
   ctv_imu = rm_imu.transpose() * ctv_world;
@@ -95,7 +90,7 @@ CTVec CoordSolver::WorldToCam(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) const 
   return {hctv_cam[0], hctv_cam[1], hctv_cam[2]};
 }
 
-CTVec CoordSolver::MuzzleToWorld(CTVec REF_IN ctv_muzzle, RMat REF_IN rm_imu) const {
+CTVec Solver::MuzzleToWorld(CTVec REF_IN ctv_muzzle, RMat REF_IN rm_imu) const {
   HCTVec hctv_muzzle, hctv_imu;
   CTVec ctv_imu;
   hctv_muzzle << ctv_muzzle[0], ctv_muzzle[1], ctv_muzzle[2], 1;
@@ -105,7 +100,7 @@ CTVec CoordSolver::MuzzleToWorld(CTVec REF_IN ctv_muzzle, RMat REF_IN rm_imu) co
   return rm_imu * ctv_imu;
 }
 
-CTVec CoordSolver::WorldToMuzzle(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) const {
+CTVec Solver::WorldToMuzzle(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) const {
   HCTVec hctv_muzzle, hctv_imu;
   CTVec ctv_imu, ctv_muzzle;
   ctv_imu = rm_imu.transpose() * ctv_world;
@@ -115,12 +110,12 @@ CTVec CoordSolver::WorldToMuzzle(CTVec REF_IN ctv_world, RMat REF_IN rm_imu) con
   return {hctv_muzzle[0], hctv_muzzle[1], hctv_muzzle[2]};
 }
 
-cv::Point2f CoordSolver::CamToPic(CTVec REF_IN ctv_cam) {
+cv::Point2f Solver::CamToPic(CTVec REF_IN ctv_cam) {
   CTVec result = (1.f / ctv_cam.z()) * intrinsic_mat_eigen_ * ctv_cam;
   return {static_cast<float>(result.x()), static_cast<float>(result.y())};
 }
 
-CTVec CoordSolver::DisparityToDepth(HCTVec REF_IN hctv_pic_d) {
+CTVec Solver::DisparityToDepth(HCTVec REF_IN hctv_pic_d) {
   HCTVec hctv_cam = dsp_to_dep_mat_ * hctv_pic_d;
   return {hctv_cam[0] / hctv_cam[3], hctv_cam[1] / hctv_cam[3], hctv_cam[2] / hctv_cam[3]};
 }

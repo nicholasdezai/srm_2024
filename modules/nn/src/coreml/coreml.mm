@@ -21,7 +21,7 @@ class CoreML final : public Yolo {
   CVPixelBufferRef pixelBuffer_;  ///< 网络原始输出
 
   /// 相机注册信息
-  inline static auto registry_ = factory::RegistrySub<Yolo, CoreML>("coreml");
+  inline static auto registry_ = RegistrySub<Yolo, CoreML>("coreml");
 };
 
 bool CoreML::Initialize(std::string REF_IN model_file, int num_classes, int num_points) {
