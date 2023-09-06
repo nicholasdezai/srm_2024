@@ -6,8 +6,17 @@
 #include <filesystem>
 
 namespace srm::nn {
+TensoRT::~TensorRT() {
+  delete execution_context_;
+  delete engine_;
+  delete runtime;
+  cudaFreeHost(input_data_host_);
+  cudaFreeHost(output_data_host_);
+}
 bool TensorRT::Initialize(std::string REF_IN model_file, int num_classes, int num_points) {
   model_file_path_ = std::move(model_file);
+  num_classes_ = std::move(num_classes);
+  num_points_ = std::move(num_points);
   std::filesystem::path path(model_file_path_);
   path.replace_extension("cache");
   model_cache_path_ = path.c_str();
@@ -83,7 +92,7 @@ void TensorRT::BuildEngineFromCache() {
     return data;
   };
   auto engine_data = load_file(model_cache_path_);
-  auto runtime = make_shared(nvinfer1::createInferRuntime(logger_));
+  runtime_ = nvinfer1::createInferRuntime(logger_);
   engine_ = runtime->deserializeCudaEngine(engine_data.data(), engine_data.size());
 }
 
@@ -110,7 +119,8 @@ std::vector<Objects> TensorRT::Run(cv::Mat image) {
                                cudaMemcpyDeviceToHost, stream_));
   checkRuntime(cudaStreamSynchronize(stream_));
   auto end = std::chrono::system_clock::now();
-  DLOG(INFO) << "DETECTION TIME COST: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  output_data_ = output_data_host_;
+  DLOG(INFO) << "Detection time cost: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
   std::vector<Objects> objs;
   GetObjects(objs);
