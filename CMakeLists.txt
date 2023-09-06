@@ -4,7 +4,6 @@ project(SRM-Vision-2024)
 set(EXECUTABLE_NAME srm-vision-2024)
 
 # 设置编译选项
-add_link_options(-Wl,-no-as-needed)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_CXX_STANDARD 20)
@@ -14,6 +13,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_CXX_COMPILER clang++)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+  add_link_options(-Wl,-no-as-needed)
   if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64")
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_COMPILER g++) # Ubuntu 20.04 or 22.04

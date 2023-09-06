@@ -73,11 +73,6 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
   )
 endif()
 
-  target_link_directories(
-    ${LIB}
-    PUBLIC ${CoreML_LIBS}
-  )
-
 # 设置链接库
 target_link_libraries(
   ${LIB}
