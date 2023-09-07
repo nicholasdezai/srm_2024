@@ -9,6 +9,9 @@
 # 全局机器人类型，可选项：hero, infantry, sentry
 global.from: &from_global hero
 
+core:
+  fps_limit: 100.0
+
 video:
   # 视频源来自的机器人
   from: *from_global

@@ -3,6 +3,7 @@
 
 #include "srm/common.h"
 #include "srm/coord.h"
+#include "srm/core/fps-controller.h"
 #include "srm/nn.h"
 #include "srm/robot.h"
 #include "srm/video.h"
@@ -35,7 +36,7 @@ class Core {
   virtual int Run() = 0;
 
  protected:
-  static std::atomic_bool exit_signal_;  ///< 主循环退出信号
+  inline static std::atomic_bool exit_signal_ = false;  ///< 主循环退出信号
 
   video::Frame frame_;                                                        ///< 帧数据
   std::vector<std::function<void(void *, video::Frame &)>> frame_callbacks_;  ///< 取图回调函数
@@ -44,6 +45,8 @@ class Core {
   std::unique_ptr<video::Writer> writer_;  ///< 视频写入接口
   std::unique_ptr<robot::Serial> serial_;  ///< 串口收发接口
   std::unique_ptr<coord::Solver> solver_;  ///< 坐标求解接口
+
+  std::unique_ptr<FPSController> fps_controller_;  ///< 帧率控制器
 };
 
 }  // namespace srm::core

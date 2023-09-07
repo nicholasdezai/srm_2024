@@ -12,7 +12,19 @@ class StereoCore : public Core {
   inline static auto registry_ = RegistrySub<Core, StereoCore>("stereo");  ///< 主控注册信息
 };
 
-int StereoCore::Run() { return 0; }
+int StereoCore::Run() {
+  cv::namedWindow("test");
+  while (!Core::exit_signal_) {
+    video::Frame frame;
+    while (!reader_->GetFrame(frame))
+      ;
+    cv::imshow("test", frame.image);
+    cv::waitKey(1);
+    fps_controller_->Tick();
+    LOG_EVERY_N(INFO, 100) << fps_controller_->GetFPS();
+  }
+  return 0;
+}
 
 StereoCore::~StereoCore() {
   for (int i = 0; i < reader_->SourceCount(); i++) reader_->UnregisterFrameCallback(&frame_callbacks_[i]);
@@ -112,6 +124,10 @@ bool StereoCore::Initialize() {
       return false;
     }
   }
+
+  //  ---------------fps功能初始化---------------
+  fps_controller_ = std::make_unique<FPSController>();
+  fps_controller_->Initialize(cfg.Get<double>({"core.fps_limit"}));
 
   LOG(INFO) << "Initialized base environment of " << cfg.Get<std::string>({"global.from"}) << " controller.";
   return true;
