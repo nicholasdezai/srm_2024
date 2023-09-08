@@ -1,9 +1,10 @@
-#include "tensorrt.h"
-
 #include <NvOnnxParser.h>
 #include <common.h>
 
 #include <filesystem>
+
+#include "cuda-help.h"
+#include "srm/nn/yolo.h"
 
 namespace srm::nn {
 
@@ -39,10 +40,10 @@ class TensorRT final : public Yolo {
   void BuildEngineFromCache();
 };
 
-TensoRT::~TensorRT() {
+TensorRT::~TensorRT() {
   delete execution_context_;
   delete engine_;
-  delete runtime;
+  delete runtime_;
   cudaFreeHost(input_data_host_);
   cudaFreeHost(output_data_host_);
 }
@@ -126,7 +127,7 @@ void TensorRT::BuildEngineFromCache() {
   };
   auto engine_data = load_file(model_cache_path_);
   runtime_ = nvinfer1::createInferRuntime(logger_);
-  engine_ = runtime->deserializeCudaEngine(engine_data.data(), engine_data.size());
+  engine_ = runtime_->deserializeCudaEngine(engine_data.data(), engine_data.size());
 }
 
 std::vector<Objects> TensorRT::Run(cv::Mat image) {

@@ -9,6 +9,11 @@ int main() {
   it->Initialize("armor.onnx", 36, 4);
   auto img = cv::imread("test.jpg");
   auto objs = it->Run(img);
-  for (auto &x : objs) std::cout << x.x1 << " " << x.y1 << " " << x.x2 << " " << x.y2 << std::endl;
+  cv::line(img, objs[0].pts[0], objs[0].pts[1], {255, 255, 255});
+  cv::line(img, objs[0].pts[1], objs[0].pts[2], {255, 255, 255});
+  cv::line(img, objs[0].pts[2], objs[0].pts[3], {255, 255, 255});
+  cv::line(img, objs[0].pts[3], objs[0].pts[0], {255, 255, 255});
+  cv::imshow("a", img);
+  cv::waitKey();
   return 0;
 }
