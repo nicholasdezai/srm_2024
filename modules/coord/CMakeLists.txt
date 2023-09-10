@@ -25,4 +25,9 @@ target_include_directories(
   PUBLIC ${GLOG_INCLUDE_DIRS}
   PUBLIC ${EIGEN3_INCLUDE_DIR})
 
-target_link_libraries(${LIB} ${OpenCV_LIBS} glog::glog)
+target_link_libraries(
+  ${LIB}
+  ${OpenCV_LIBS}
+  glog::glog
+  srm_common
+)

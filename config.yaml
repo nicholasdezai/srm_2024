@@ -1,0 +1,128 @@
+%YAML:1.2
+---
+# 配置文件说明：
+#   1.所有的配置要放置在所属的功能模块下。
+#   2.存储类似于树形结构，放在前面的同名配置的叶子结点会覆盖后面的。
+#   3.例如要访问video下的writer，在程序中使用cfg.Get<bool>("video.writer");
+#   4.若某个配置里只有一个选项，可合并为如robot.serial: true
+
+# 全局机器人类型，可选项：hero, infantry, sentry
+global.from: &from_global hero
+
+core:
+  fps_limit: 100.0
+
+video:
+  # 视频源来自的机器人
+  from: *from_global
+
+  # 是否开启视频记录，可选项：true, false
+  writer: false
+
+  # 视频来源，可选项：file, camera
+  reader: file
+
+coord:
+  # 提供坐标系的机器人
+  from: *from_global
+
+# 是否开启串口，可选项：true, false 
+robot.serial: false
+
+# 查看方式，可选项：local, web
+viewer.type: local  
+...
+
+---
+coord:
+  from: hero
+  hero:
+    ea_cam_imu: [ 0, -3, 0 ]  # 相机相对陀螺仪平面的欧拉角；方向：右, 上, 右；单位：度
+    ea_muzzle_imu: [ 0, +3, 0 ]  # 枪口相对陀螺仪平面的欧拉角；方向：右, 上, 右；单位：度
+    ctv_cam_imu: [ -3.76, -42.49, +78.03 ]  # 相机相对陀螺仪的位移；方向：右, 下, 前；单位：mm
+    ctv_muzzle_imu: [ -4.46, +77.4, +109.99 ]  # 枪口相对陀螺仪的位移；方向：右, 下, 前；单位：mm
+    ctv_imu_world: [ 0, 0, 0 ]  # 陀螺仪相对世界坐标原点的位移；方向：右, 下, 前；单位：mm
+    R: !opencv-matrix  # 左相机坐标系到右相机坐标系的旋转矩阵
+      rows: 3
+      cols: 3
+      dt: d
+      data: [ 9.9970795170528060e-01, 1.0654582873262323e-02,
+          -2.1690808215213533e-02, -1.0630819404531363e-02,
+          9.9994275845816749e-01, 1.2105725336624014e-03,
+          2.1702464745291701e-02, -9.7962792314405778e-04,
+          9.9976399382709902e-01 ]
+    T: !opencv-matrix  # 左相机坐标系到右相机坐标系的位移向量
+      rows: 3
+      cols: 1
+      dt: d
+      data: [ -1.9114284393224293e-01, 1.4423806965857752e-03,
+          -1.9510180888322674e-03 ]
+
+video:
+  from: hero
+  reader: file
+  writer: true
+  hero:
+    camera:
+      cam_num: 2
+      hardware_trigger: 0
+      frame_rate: 120
+      camera0: STEREO_TEST_L
+      camera1: STEREO_TEST_R 
+    file:
+      cam_num: 2
+      camera0: STEREO_TEST_L
+      camera1: STEREO_TEST_R
+      video0: ../assets/outpost/blue.mp4
+      video1: ../assets/outpost/blue.mp4
+
+  cameras:
+    STEREO_TEST_L:
+      sn: 00L28498178
+      type: HikCamera
+      intrinsic_mat: !opencv-matrix
+        rows: 3
+        cols: 3
+        dt: d
+        data: [ 1.7773367525237572e+03, 0., 7.2731486534211126e+02, 0.,
+          1.7762407213273534e+03, 5.5610840701984978e+02, 0., 0., 1. ]
+      distortion_mat: !opencv-matrix
+        rows: 1
+        cols: 14
+        dt: d
+        data: [ -1.1243598120756725e-01, 4.5222615097545349e-01, 0., 0., 0.,
+            0., 0., 1.2595222636662466e+00, 0., 0., 0., 0., 0., 0. ]
+      exposure_time: 10000
+      gain_value: 14.0
+      time_stamp_ns: 10
+
+    STEREO_TEST_R:
+      sn: 00L28498193
+      type: HikCamera
+      intrinsic_mat: !opencv-matrix
+        rows: 3
+        cols: 3
+        dt: d
+        data: [ 1.7773367525237572e+03, 0., 6.9125095552307630e+02, 0.,
+            1.7762407213273534e+03, 5.4458661626841433e+02, 0., 0., 1. ]
+      distortion_mat: !opencv-matrix
+        rows: 1
+        cols: 14
+        dt: d
+        data: [ -9.3753648208355161e-02, 4.6541444615146516e-01, 0., 0., 0.,
+            0., 0., 2.1827609962670884e+00, 0., 0., 0., 0., 0., 0. ]
+      exposure_time: 10000
+      gain_value: 14.0
+      time_stamp_ns: 10
+
+viewr:
+  type: local
+
+nn:
+  yolo:
+    coreml:
+      armor: ../assets/armor.onnx
+      rune: ../assets/rune.onnx
+    tensorrt:
+      armor: ../assets/armor.mlmodelc
+      rune: ../assets/rune.mlmodelc

@@ -26,9 +26,12 @@
 - [x]  common
 - [x]  coord
 - [ ]  core
+  - [ ]  monocular
+  - [ ]  stereo
+  - [x]  config
 - [ ]  nn
-  - [x]  coreml （已提pr）
-  - [ ]  tensorrt
+  - [x]  coreml
+  - [ ]  tensorrt (testing)
 - [ ]  robot
 - [x]  video
 - [ ]  viewer
