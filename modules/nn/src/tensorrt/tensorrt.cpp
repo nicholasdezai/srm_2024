@@ -8,6 +8,10 @@
 
 namespace srm::nn {
 
+/**
+ * @brief TensorRT平台的Yolo推理类
+ * @warning 禁止直接构造此类，请使用 @code srm::video::CreateYolo("tensorrt") @endcode 获取该类的公共接口指针
+ */
 class TensorRT final : public Yolo {
  public:
   TensorRT() = default;
@@ -16,9 +20,10 @@ class TensorRT final : public Yolo {
   std::vector<Objects> Run(cv::Mat image) override;
 
  private:
-  inline static auto registry_ = factory::RegistrySub<Yolo, TensorRT>("tensorrt");
+  inline static auto registry_ = RegistrySub<Yolo, TensorRT>("tensorrt");  ///< 推理平台注册信息
 
-  int batches_{}, channels_{};
+  int batches_{};   ///< 图片的批数
+  int channels_{};  ///< 通道数
 
   std::string model_file_path_, model_cache_path_;
 
@@ -29,12 +34,12 @@ class TensorRT final : public Yolo {
   TRTLogger logger_;
 
   int input_numel_ = 0;
-  float *input_data_host_{};
-  float *input_data_device_{};
+  float *input_data_host_{};    ///< 输入数据在本机的指针
+  float *input_data_device_{};  ///< 输入数据在显卡的指针
 
   int output_numel_ = 0;
-  float *output_data_host_{};
-  float *output_data_device_{};
+  float *output_data_host_{};    ///< 输出数据在本机的指针
+  float *output_data_device_{};  ///< 输出数据在显卡的指针
 
   void BuildEngineFromONNX();
   void BuildEngineFromCache();

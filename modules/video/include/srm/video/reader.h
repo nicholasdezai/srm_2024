@@ -22,7 +22,7 @@ class Reader {
 
   /**
    * @brief 初始化视频源
-   * @param [in] config_file 配置文件路径
+   * @param [in] prefix 前置路径
    * @return 是否初始化成功
    */
   virtual bool Initialize(std::string REF_IN prefix) = 0;

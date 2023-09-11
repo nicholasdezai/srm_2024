@@ -8,6 +8,7 @@
 #include "srm/common/buffer.h"
 
 namespace srm::video {
+/// @todo 双目的视频源支持
 /// 视频录像接口
 class Writer final {
   static constexpr size_t BUFFER_SIZE = 512;  ///< 缓冲区大小

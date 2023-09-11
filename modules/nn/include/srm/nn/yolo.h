@@ -13,11 +13,13 @@ namespace srm::nn {
 
 /// 识别结果
 struct Objects {
-  float x1, y1;                  // 预测框左上角顶点
-  float x2, y2;                  // 预测框右下角顶点
-  float prob;                    // 置信度
-  int cls;                       // 类编号
-  std::vector<cv::Point2f> pts;  // 关键点
+  float x1;                      ///< 预测框左上角顶点横坐标
+  float y1;                      ///< 预测框左上角顶点纵坐标
+  float x2;                      ///< 预测框右下角顶点横坐标
+  float y2;                      ///< 预测框右下角顶点纵坐标
+  float prob;                    ///< 置信度
+  int cls;                       ///< 类编号
+  std::vector<cv::Point2f> pts;  ///< 关键点
 };
 
 /// yolov8神经网络类
@@ -53,7 +55,7 @@ class Yolo {
   int input_w_{};  ///< 图片宽度
   int input_h_{};  ///< 图片高度
 
-  float *output_data_{nullptr};
+  float *output_data_{nullptr};  ///< 网络推理后的原始输出
 
   /**
    * @brief 将图片调整为适合网络输入大小的尺寸

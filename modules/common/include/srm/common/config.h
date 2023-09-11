@@ -10,22 +10,29 @@
 #include "srm/common/tags.h"
 
 namespace srm {
-/// 命令行参数解析、封装类
+/// 参数解析类
 class Config final {
   using param = std::variant<bool, int, double, std::string, std::vector<double>, cv::Mat>;
 
  public:
   /**
-   * @brief 获取 CliArgParser 类唯一实例
+   * @brief 获取 Config 类唯一实例
    * @return 唯一实例的引用
    */
   static Config &Instance();
 
   /**
-   * @brief 获取变量的值
-   * @tparam T
-   * @param para_name
-   * @return T
+   * @brief 获取参数
+   * @details 例如对于如下yaml文件：
+    ```yaml
+    core:
+      fps_limit: 100.0
+    ```
+    在程序内可使用 @code cfg.Get<double>({"core.fps_limit"}); @endcode
+    或者 @code cfg.Get<double>({"core", "fps_limit"}); @endcode 来获取值
+   * @tparam T 参数的数据类型
+   * @param [in] list 参数路径列表
+   * @return T 参数的值
    */
   template <class T>
   T Get(std::initializer_list<std::string> FWD_IN list);

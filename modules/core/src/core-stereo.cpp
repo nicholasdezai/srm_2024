@@ -1,8 +1,12 @@
-#include "opencv2/calib3d.hpp"
+#include <opencv2/calib3d.hpp>
+
 #include "srm/core.h"
 
 namespace srm::core {
-
+/**
+ * @brief 双目机器人主控接口类
+ * @warning 禁止直接构造此类，请使用 @code srm::video::CreateCore("stereo") @endcode 获取该类的公共接口指针
+ */
 class StereoCore : public Core {
  public:
   ~StereoCore() final;

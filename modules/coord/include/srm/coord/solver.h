@@ -46,14 +46,13 @@ class Solver {
 
   /**
    * @brief 初始化坐标系参数
-   * @param [in] config_file 配置文件名
+   * @param [in] prefix 前置路径
    * @param intrinsic_mat 相机矩阵
    * @param distortion_mat 畸变矩阵
    * @param dsp_to_dep_mat 双目视差转深度矩阵
    * @return 初始化过程是否正常完成
    */
-  bool Initialize(std::string REF_IN config_file, cv::Mat intrinsic_mat, cv::Mat distortion_mat,
-                  cv::Mat dsp_to_dep_mat);
+  bool Initialize(std::string REF_IN prefix, cv::Mat intrinsic_mat, cv::Mat distortion_mat, cv::Mat dsp_to_dep_mat);
 
   /**
    * @brief 解算 PnP 数据

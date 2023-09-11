@@ -8,7 +8,6 @@ namespace srm::core {
 void FPSController::Initialize(double target_fps) {
   frame_interval_ = 1.0 / target_fps;
   last_time_ = std::chrono::high_resolution_clock::now();
-  frame_count_ = 0;
 }
 
 void FPSController::Tick() {

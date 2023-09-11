@@ -8,7 +8,11 @@
 #import "Model.h"  //! OpenCV 的头文件必须在 Obj-C 前面
 
 namespace srm::nn {
-/// macOS平台的yolov8神经网络类
+
+/**
+ * @brief CoreML平台的Yolo推理类
+ * @warning 禁止直接构造此类，请使用 @code srm::video::CreateYolo("coreml") @endcode 获取该类的公共接口指针
+ */
 class CoreML final : public Yolo {
  public:
   CoreML() = default;
@@ -20,8 +24,7 @@ class CoreML final : public Yolo {
   Model *model_;                  ///< 模型指针
   CVPixelBufferRef pixelBuffer_;  ///< 网络原始输出
 
-  /// 相机注册信息
-  inline static auto registry_ = RegistrySub<Yolo, CoreML>("coreml");
+  inline static auto registry_ = RegistrySub<Yolo, CoreML>("coreml");  ///< 神经网络注册信息
 };
 
 bool CoreML::Initialize(std::string REF_IN model_file, int num_classes, int num_points) {
