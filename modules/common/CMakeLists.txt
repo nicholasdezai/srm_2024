@@ -19,6 +19,11 @@ endif()
 file(GLOB SRC src/*.cpp)
 add_library(${LIB} ${SRC})
 
+target_compile_options(
+  ${LIB}
+  PUBLIC -fPIC
+)
+
 target_include_directories(
   ${LIB}
   PUBLIC ${OpenCV_INCLUDE_DIRS}

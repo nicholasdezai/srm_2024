@@ -5,6 +5,7 @@
 
 #include <opencv2/core/mat.hpp>
 #include <string>
+#include <variant>
 
 #include "srm/common/tags.h"
 
