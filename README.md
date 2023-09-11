@@ -1,4 +1,31 @@
-# SRM-Vision-2024
+# Vision-2024
+
+## 环境配置
+
+### 基础软件包
+
+``ubuntu``
+```shell
+sudo apt install libopencv-dev libceres-dev libyaml-cpp-dev
+```
+
+``macOS``
+```shell
+ibrew install opencv ceres-solver
+```
+### 海康相机库
+[自行下载sdk](https://www.hikrobotics.com/cn/machinevision/service/download?module=0)
+
+### 神经网络
+
+``ubuntu``
+
+参照飞书文档自行安装cuda、cudnn、tensorrt
+
+``macOS``
+
+无需配置
+
 
 ## 功能
 
